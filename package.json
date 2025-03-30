@@ -7,13 +7,11 @@
     "tsgo": "./bin.js"
   },
   "scripts": {
-    "postinstall": "node install.js",
     "prepublishOnly": "npm i && rm bin/tsgo-*"
   },
   "files": [
     "bin",
-    "bin.js",
-    "install.js"
+    "bin.js"
   ],
   "repository": {
     "url": "https://github.com/rxliuli/tsgo-npm-release"
