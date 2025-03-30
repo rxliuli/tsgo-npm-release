@@ -2,9 +2,11 @@
 
 import { join } from 'node:path'
 import { existsSync, chmodSync } from 'node:fs'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import json from './package.json' with { type: 'json' }
 
 const platform = process.platform
 const arch = process.arch
@@ -27,13 +29,36 @@ const ext = platform === 'win32' ? '.exe' : ''
 
 const binaryName = `tsgo-${platformMap[platform]}-${archMap[arch]}${ext}`;
 
-const binaryPath = join(path.dirname(fileURLToPath(import.meta.url)), 'bin', binaryName)
+const binDir = join(path.dirname(fileURLToPath(import.meta.url)), 'bin')
+const binaryPath = join(binDir, binaryName)
+
+async function download() {
+  console.log(
+    `First time running tsgo, downloading binary file for ${platformMap[platform]}-${archMap[arch]}...`,
+  )
+
+  try {
+    const downloadUrl = `https://github.com/rxliuli/tsgo-npm-release/releases/download/v${json.version}/${binaryName}`
+    console.log('downloadUrl', downloadUrl)
+    const response = await fetch(downloadUrl)
+
+    if (!response.ok) {
+      throw new Error(`Download failed: ${response.statusText} (${response.status})`)
+    }
+
+    const buffer = await response.arrayBuffer();
+    await writeFile(binaryPath, Buffer.from(buffer))
+
+    console.log('Download completed!')
+  } catch (error) {
+    console.error(`Download failed: ${error.message}`)
+    process.exit(1)
+  }
+}
 
 if (!existsSync(binaryPath)) {
-  console.error(
-    `Not found binary file for current platform (${platform}-${arch})`,
-  )
-  process.exit(1)
+  await mkdir(binDir, { recursive: true })
+  await download()
 }
 
 if (platform !== 'win32') {
