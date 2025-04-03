@@ -22,6 +22,12 @@ This unofficial package allows developers to:
 npm install @rxliuli/tsgo
 ```
 
+### Optional Installation Parameters
+
+You may add these environment variables to your system to invoke custom installation parameters:   
+- `TSGO_DIRECTORY` : If you do not want to download a copy of `tsgo` that someone else built, you can specify this environment variable. This should be a path to the directory, where the `typescript-go` project is, should contain the partial path `./built/local/tsgo`.
+- `TSGO_PROVIDER` : If you want to download a copy of `tsgo` from a custom GitHub user, you can specify this environment variable. This should be a GitHub username that has releases for `tsgo`.
+
 ## Usage
 
 This package provides the `tsgo` binary which functions similarly to `tsc`:
